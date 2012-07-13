@@ -28,7 +28,7 @@ module Fluent
                        else "\t"
                        end
 
-        @add_newline = first_value( conf['add_newline'], @add_newline, true )
+        @add_newline = first_value( Fluent::Config.bool_value(conf['add_newline']), @add_newline, true )
 
         @remove_prefix = conf['remove_prefix']
         if @remove_prefix
