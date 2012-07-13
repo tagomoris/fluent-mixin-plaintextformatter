@@ -153,5 +153,4 @@ field_separator comma
     # format
     assert_equal "10000,foo foo baz\n", p.format('test.a', 1342163105, r)
   end
-
 end
