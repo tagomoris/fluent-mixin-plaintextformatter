@@ -65,7 +65,7 @@ module Fluent
 
       def stringify_record(record)
         if @custom_attributes.nil?
-          record.to_json
+          Yajl.dump(record)
         else
           @custom_attributes.map{|attr|
             (record[attr] || 'NULL').to_s

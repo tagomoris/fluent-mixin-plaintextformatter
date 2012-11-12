@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'helper'
 
 class PlainTextFormatterTest < Test::Unit::TestCase
@@ -152,5 +153,12 @@ field_separator comma
     assert_equal "10000,foo foo baz", p.stringify_record(r)
     # format
     assert_equal "10000,foo foo baz\n", p.format('test.a', 1342163105, r)
+  end
+
+  def test_multibyte
+    p = create_plugin_instance(Fluent::TestAOutput, "type testa\n")
+    r = { "msg" => "あ".force_encoding("ASCII-8BIT")}
+    # stringify
+    assert_equal({ "msg" => "あ"}, JSON.parse(p.stringify_record(r)))
   end
 end
