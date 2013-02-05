@@ -25,6 +25,7 @@ module Fluent
         @f_separator = case @field_separator
                        when /SPACE/i then ' '
                        when /COMMA/i then ','
+                       when /SOH/i then "\x01"
                        else "\t"
                        end
 

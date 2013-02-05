@@ -85,7 +85,27 @@ remove_prefix test
     # output_data_type json
     assert_equal r, JSON.parse(line.chomp.split(/ /, 3)[2])
   end
+  def test_separator_soh_remove_prefix
+    p = create_plugin_instance(Fluent::TestBOutput, %[
+type testb
+localtime
+time_format %Y/%m/%d:%H:%M:%S
+field_separator soh
+remove_prefix test
+])
+    r = {'foo' => 'foo foo baz', 'bar' => 10000}
+    # stringify
+    assert_equal r, JSON.parse(p.stringify_record(r))
 
+    line = p.format('test.b', 1342163105, r)
+    # add_newline false
+    assert_equal line[0..-1], line.chomp
+    # output_include_time true, output_include_tag true, localtime, separator SOH
+    assert_equal ['2012/07/13:16:05:05', 'b'], line.chomp.split(/\001/, 3)[0..1]
+    # output_data_type json
+    assert_equal r, JSON.parse(line.chomp.split(/\001/, 3)[2])
+  end
+  
   def test_default_without_time_tag
     p = create_plugin_instance(Fluent::TestCOutput, "type testc\n")
     r = {'foo' => 'foo foo baz', 'bar' => 10000}
