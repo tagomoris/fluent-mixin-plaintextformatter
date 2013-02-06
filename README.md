@@ -7,7 +7,7 @@ This module provides features to:
 * format whole data as serialized JSON, single attribute or separated multi attributes
 * include time as line header (formatted by time_format in UTC(default) or localtime), or not
 * include tag as line header (remove_prefix available), or not
-* change field separator (TAB(default), SPACE or COMMA)
+* change field separator (TAB(default), SPACE, COMMA or SOH(\\001))
 * add new line as termination, or not
 
 ## Usage
@@ -72,7 +72,7 @@ Provided configurations are below:
 * output\_data\_type
   * 'json': output by JSON
   * 'attr:key1,key2,key3': values of 'key1' and 'key2' and ..., with separator specified by 'field_separator'
-* field\_separator [TAB/SPACE/COMMA]
+* field\_separator [TAB/SPACE/COMMA/SOH]
 * add_newline [yes/no]
 * time_format
   * format string like '%Y-%m-%d %H:%M:%S' or you want
@@ -80,9 +80,12 @@ Provided configurations are below:
   * input tag 'test.foo' with 'remove_prefix test', output tag is 'foo'.
   * 'default\_tag' configuration is used when input tag is completely equal to 'remove\_prefix'
 
-## AUTHORS
+## AUTHOR / CONTRIBUTORS
 
-* TAGOMORI Satoshi <tagomoris@gmail.com>
+* AUTHOR
+  * TAGOMORI Satoshi <tagomoris@gmail.com>
+* CONTRIBUTORS
+  * wolfg1969 https://github.com/wolfg1969
 
 ## LICENSE
 
