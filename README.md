@@ -71,6 +71,7 @@ Provided configurations are below:
 * output\_include\_tag [yes/no]
 * output\_data\_type
   * 'json': output by JSON
+  * 'ltsv': output by LTSV, see: http://ltsv.org/
   * 'attr:key1,key2,key3': values of 'key1' and 'key2' and ..., with separator specified by 'field_separator'
 * field\_separator [TAB/SPACE/COMMA/SOH]
 * add_newline [yes/no]

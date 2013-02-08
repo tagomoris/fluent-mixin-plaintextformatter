@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |gem|
   gem.name          = "fluent-mixin-plaintextformatter"
-  gem.version       = "0.2.0"
+  gem.version       = "0.2.1"
   gem.authors       = ["TAGOMORI Satoshi"]
   gem.email         = ["tagomoris@gmail.com"]
   gem.description   = %q{included to format values into json, tsv or csv}
@@ -14,5 +14,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_development_dependency "fluentd"
+  gem.add_development_dependency "ltsv"
   gem.add_runtime_dependency "fluentd"
+  gem.add_runtime_dependency "ltsv"
 end
