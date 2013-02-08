@@ -1,4 +1,5 @@
 require 'fluent/config'
+require 'ltsv'
 
 module Fluent
   module Mixin
@@ -57,6 +58,8 @@ module Fluent
 
         @custom_attributes = if @output_data_type == 'json'
                                nil
+                             elsif @output_data_type == 'ltsv'
+                               nil
                              elsif @output_data_type =~ /^attr:(.+)$/
                                $1.split(',')
                              else
@@ -66,7 +69,12 @@ module Fluent
 
       def stringify_record(record)
         if @custom_attributes.nil?
-          record.to_json
+          case @output_data_type
+          when 'json'
+            record.to_json
+          when 'ltsv'
+            LTSV.dump(record)
+          end
         else
           @custom_attributes.map{|attr|
             (record[attr] || 'NULL').to_s

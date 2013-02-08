@@ -173,4 +173,18 @@ field_separator comma
     # format
     assert_equal "10000,foo foo baz\n", p.format('test.a', 1342163105, r)
   end
+
+  def test_field_separator_newline_ltsv
+    p = create_plugin_instance(Fluent::TestDOutput, "type testd\nlocaltime\n")
+    r = {'foo' => 'foo foo baz', 'bar' => 10000}
+    rs = {:foo => 'foo foo baz', :bar => "10000"}
+    # stringify
+    assert_equal rs, LTSV.parse(p.stringify_record(r))
+
+    line = p.format('test.d', 1342163105, r)
+    # output_include_time true, output_include_tag true, localtime, separator COMMA
+    assert_equal ['2012-07-13T16:05:05+09:00', 'test.d'], line.chomp.split(/\t/, 3)[0..1]
+    # output_data_type json
+    assert_equal rs, LTSV.parse(line.chomp.split(/\t/, 3)[2])
+  end
 end

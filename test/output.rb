@@ -61,4 +61,21 @@ module Fluent
     end
   end
 
+  class TestDOutput < Fluent::BufferedOutput
+    Fluent::Plugin.register_output('testa', self)
+
+    config_set_default :buffer_type, 'memory'
+
+    include Fluent::Mixin::PlainTextFormatter
+
+    config_set_default :output_include_time, true
+    config_set_default :output_include_tag, true
+    config_set_default :output_data_type, 'ltsv'
+    config_set_default :remove_prefix, nil
+    config_set_default :default_tag, 'tag.blank'
+
+    def configure(conf)
+      super
+    end
+  end
 end
