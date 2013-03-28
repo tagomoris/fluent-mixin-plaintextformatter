@@ -179,12 +179,24 @@ field_separator comma
     r = {'foo' => 'foo foo baz', 'bar' => 10000}
     rs = {:foo => 'foo foo baz', :bar => "10000"}
     # stringify
-    assert_equal rs, LTSV.parse(p.stringify_record(r))
+    obj_from_ltsv = LTSV.parse(p.stringify_record(r))
+    if obj_from_ltsv.is_a?(Array)
+      # LTSV breaks compatibility for LTSV.parse
+      # Results of LTSV.parse(string_of_single_object) returns Array instance after v0.0.2
+      obj_from_ltsv = obj_from_ltsv.first
+    end
+    assert_equal rs, obj_from_ltsv
 
     line = p.format('test.d', 1342163105, r)
     # output_include_time true, output_include_tag true, localtime, separator COMMA
     assert_equal ['2012-07-13T16:05:05+09:00', 'test.d'], line.chomp.split(/\t/, 3)[0..1]
     # output_data_type json
-    assert_equal rs, LTSV.parse(line.chomp.split(/\t/, 3)[2])
+    obj_from_ltsv = LTSV.parse(line.chomp.split(/\t/, 3)[2])
+    if obj_from_ltsv.is_a?(Array)
+      # LTSV breaks compatibility for LTSV.parse
+      # Results of LTSV.parse(string_of_single_object) returns Array instance after v0.0.2
+      obj_from_ltsv = obj_from_ltsv.first
+    end
+    assert_equal rs, obj_from_ltsv
   end
 end
