@@ -62,6 +62,8 @@ module Fluent
                                nil
                              elsif @output_data_type =~ /^attr:(.+)$/
                                $1.split(',')
+                                 .map { |element| element.strip }
+                                 .reject! { |element| element.empty? }
                              else
                                raise Fluent::ConfigError, "invalid output_data_type:'#{@output_data_type}'"
                              end
