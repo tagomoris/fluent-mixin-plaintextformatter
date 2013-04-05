@@ -61,7 +61,7 @@ module Fluent
                              elsif @output_data_type == 'ltsv'
                                nil
                              elsif @output_data_type =~ /^attr:(.+)$/
-                               $1.split(',')
+                               $1.split(',').map(&:strip).reject(&:empty?)
                              else
                                raise Fluent::ConfigError, "invalid output_data_type:'#{@output_data_type}'"
                              end
