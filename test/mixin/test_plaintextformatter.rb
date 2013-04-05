@@ -33,7 +33,7 @@ class PlainTextFormatterTest < Test::Unit::TestCase
   end
 
   def test_field_separator_newline_json
-    p = create_plugin_instance(Fluent::TestBOutput, "type testb\nlocaltime\n")
+    p = create_plugin_instance(Fluent::TestBOutput, "type testb\nutc\n")
     r = {'foo' => 'foo foo baz', 'bar' => 10000}
     # stringify
     assert_equal r, JSON.parse(p.stringify_record(r))
@@ -42,7 +42,7 @@ class PlainTextFormatterTest < Test::Unit::TestCase
     # add_newline false
     assert_equal line[0..-1], line.chomp
     # output_include_time true, output_include_tag true, localtime, separator COMMA
-    assert_equal ['2012-07-13T16:05:05+09:00', 'test.b'], line.chomp.split(/,/, 3)[0..1]
+    assert_equal ['2012-07-13T07:05:05Z', 'test.b'], line.chomp.split(/,/, 3)[0..1]
     # output_data_type json
     assert_equal r, JSON.parse(line.chomp.split(/,/, 3)[2])
   end
@@ -50,7 +50,7 @@ class PlainTextFormatterTest < Test::Unit::TestCase
   def test_time_format
     p = create_plugin_instance(Fluent::TestBOutput, %[
 type testb
-localtime
+utc
 time_format %Y/%m/%d %H:%M:%S
 ])
     r = {'foo' => 'foo foo baz', 'bar' => 10000}
@@ -61,14 +61,14 @@ time_format %Y/%m/%d %H:%M:%S
     # add_newline false
     assert_equal line[0..-1], line.chomp
     # output_include_time true, output_include_tag true, localtime, separator COMMA
-    assert_equal ['2012/07/13 16:05:05', 'test.b'], line.chomp.split(/,/, 3)[0..1]
+    assert_equal ['2012/07/13 07:05:05', 'test.b'], line.chomp.split(/,/, 3)[0..1]
     # output_data_type json
     assert_equal r, JSON.parse(line.chomp.split(/,/, 3)[2])
   end
   def test_separator_space_remove_prefix
     p = create_plugin_instance(Fluent::TestBOutput, %[
 type testb
-localtime
+utc
 time_format %Y/%m/%d:%H:%M:%S
 field_separator space
 remove_prefix test
@@ -81,14 +81,14 @@ remove_prefix test
     # add_newline false
     assert_equal line[0..-1], line.chomp
     # output_include_time true, output_include_tag true, localtime, separator COMMA
-    assert_equal ['2012/07/13:16:05:05', 'b'], line.chomp.split(/ /, 3)[0..1]
+    assert_equal ['2012/07/13:07:05:05', 'b'], line.chomp.split(/ /, 3)[0..1]
     # output_data_type json
     assert_equal r, JSON.parse(line.chomp.split(/ /, 3)[2])
   end
   def test_separator_soh_remove_prefix
     p = create_plugin_instance(Fluent::TestBOutput, %[
 type testb
-localtime
+utc
 time_format %Y/%m/%d:%H:%M:%S
 field_separator soh
 remove_prefix test
@@ -101,7 +101,7 @@ remove_prefix test
     # add_newline false
     assert_equal line[0..-1], line.chomp
     # output_include_time true, output_include_tag true, localtime, separator SOH
-    assert_equal ['2012/07/13:16:05:05', 'b'], line.chomp.split(/\001/, 3)[0..1]
+    assert_equal ['2012/07/13:07:05:05', 'b'], line.chomp.split(/\001/, 3)[0..1]
     # output_data_type json
     assert_equal r, JSON.parse(line.chomp.split(/\001/, 3)[2])
   end
@@ -175,7 +175,7 @@ field_separator comma
   end
 
   def test_field_separator_newline_ltsv
-    p = create_plugin_instance(Fluent::TestDOutput, "type testd\nlocaltime\n")
+    p = create_plugin_instance(Fluent::TestDOutput, "type testd\nutc\n")
     r = {'foo' => 'foo foo baz', 'bar' => 10000}
     rs = {:foo => 'foo foo baz', :bar => "10000"}
     # stringify
@@ -189,7 +189,7 @@ field_separator comma
 
     line = p.format('test.d', 1342163105, r)
     # output_include_time true, output_include_tag true, localtime, separator COMMA
-    assert_equal ['2012-07-13T16:05:05+09:00', 'test.d'], line.chomp.split(/\t/, 3)[0..1]
+    assert_equal ['2012-07-13T07:05:05Z', 'test.d'], line.chomp.split(/\t/, 3)[0..1]
     # output_data_type json
     obj_from_ltsv = LTSV.parse(line.chomp.split(/\t/, 3)[2])
     if obj_from_ltsv.is_a?(Array)
