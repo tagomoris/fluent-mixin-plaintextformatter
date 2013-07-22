@@ -100,7 +100,16 @@ module Fluent
                   else
                     ''
                   end
-        time_str + tag_str + stringify_record(record) + (@add_newline ? "\n" : '')
+        begin
+          time_str + tag_str + stringify_record(record) + (@add_newline ? "\n" : '')
+        rescue JSON::GeneratorError => e
+          $log.error e.message, :error_class => e.class, :record => record.inspect # quote explicitly
+          ''
+        rescue ArgumentError => e
+          raise unless e.message == 'invalid byte sequence in UTF-8'
+          $log.error e.message, :error_class => e.class, :record => record.inspect # quote explicitly
+          ''
+        end
       end
     end
   end

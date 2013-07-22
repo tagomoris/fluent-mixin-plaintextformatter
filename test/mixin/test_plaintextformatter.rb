@@ -105,7 +105,7 @@ remove_prefix test
     # output_data_type json
     assert_equal r, JSON.parse(line.chomp.split(/\001/, 3)[2])
   end
-  
+
   def test_default_without_time_tag
     p = create_plugin_instance(Fluent::TestCOutput, "type testc\n")
     r = {'foo' => 'foo foo baz', 'bar' => 10000}
@@ -172,6 +172,31 @@ field_separator comma
     assert_equal "10000,foo foo baz", p.stringify_record(r)
     # format
     assert_equal "10000,foo foo baz\n", p.format('test.a', 1342163105, r)
+  end
+
+  def test_format_invalid_utf8_sequence
+    invalid_str = [0xFA, 0xFB].pack('CC').force_encoding('utf-8')
+    valid_str = [0xFF, 0xE3].pack("U*")
+
+    p1 = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time true
+output_include_tag  true
+output_data_type json
+])
+    r1 = p1.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
+    # #format should logs for this record (but we cannot test it...)
+    assert_equal '', r1
+
+    p2 = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time true
+output_include_tag  true
+output_data_type ltsv
+])
+    r2 = p2.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
+    # #format should logs for this record (but we cannot test it...)
+    assert_equal '', r2
   end
 
   def test_field_separator_newline_ltsv
