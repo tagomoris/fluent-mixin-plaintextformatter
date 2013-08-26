@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{included to format values into json, tsv or csv}
   gem.summary       = %q{Text formatter mixin module to create fluentd plugin}
   gem.homepage      = "https://github.com/tagomoris/fluent-mixin-plaintextformatter"
+  gem.license       = "APLv2"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
