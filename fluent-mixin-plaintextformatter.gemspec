@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency "fluentd"
   gem.add_runtime_dependency "ltsv"
+  gem.add_development_dependency "rake"
 end
