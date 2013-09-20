@@ -77,7 +77,7 @@ module Fluent
           end
         else
           @custom_attributes.map{|attr|
-            (record[attr] || 'NULL').to_s
+            record[attr].nil? ? 'NULL' : record[attr].to_s
           }.join(@f_separator)
         end
       end
