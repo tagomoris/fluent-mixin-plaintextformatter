@@ -224,4 +224,18 @@ output_data_type ltsv
     end
     assert_equal rs, obj_from_ltsv
   end
+
+  def test_format_boolean_attribute
+    p = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time true
+output_include_tag true
+output_data_type attr:foo,bar
+])
+    r = {'foo' => true, 'bar' => false}
+    # stringify
+    assert_equal "true\tfalse", p.stringify_record(r)
+    # format
+    assert_equal "2012-07-13T07:05:05Z\ttest.a\ttrue\tfalse\n", p.format('test.a', 1342163105, r)
+  end
 end
