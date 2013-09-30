@@ -103,11 +103,13 @@ module Fluent
         begin
           time_str + tag_str + stringify_record(record) + (@add_newline ? "\n" : '')
         rescue JSON::GeneratorError => e
-          $log.error e.message, :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+          # partial character in source, but hit end
+          # source sequence is illegal/malformed utf-8
+          $log.error e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
           ''
         rescue ArgumentError => e
           raise unless e.message == 'invalid byte sequence in UTF-8'
-          $log.error e.message, :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+          $log.error e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
           ''
         end
       end
