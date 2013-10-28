@@ -8,6 +8,8 @@ module Fluent
       attr_accessor :add_newline, :field_separator
       attr_accessor :remove_prefix, :default_tag
 
+      attr_accessor :suppress_log_broken_string
+
       attr_accessor :f_separator
 
       def first_value(*args)
@@ -65,6 +67,12 @@ module Fluent
                              else
                                raise Fluent::ConfigError, "invalid output_data_type:'#{@output_data_type}'"
                              end
+
+        @suppress_log_broken_string = first_value(
+          Fluent::Config.bool_value(conf['suppress_log_broken_string']),
+          @suppress_log_broken_string,
+          false
+        )
       end
 
       def stringify_record(record)
@@ -105,11 +113,15 @@ module Fluent
         rescue JSON::GeneratorError => e
           # partial character in source, but hit end
           # source sequence is illegal/malformed utf-8
-          $log.error e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+          unless @suppress_log_broken_string
+            $log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+          end
           ''
         rescue ArgumentError => e
           raise unless e.message == 'invalid byte sequence in UTF-8'
-          $log.error e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+          unless @suppress_log_broken_string
+            $log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+          end
           ''
         end
       end

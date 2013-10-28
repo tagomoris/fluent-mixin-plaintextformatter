@@ -16,8 +16,11 @@ require 'fluent/test'
 unless ENV.has_key?('VERBOSE')
   nulllogger = Object.new
   nulllogger.instance_eval {|obj|
+    def logs ; @logs ; end
+    def clear ; @logs = [] ; end
     def method_missing(method, *args)
-      # pass
+      @logs ||= []
+      @logs.push([method, *args])
     end
   }
   $log = nulllogger

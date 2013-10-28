@@ -175,6 +175,8 @@ field_separator comma
   end
 
   def test_format_invalid_utf8_sequence
+    $log.clear
+
     invalid_str = [0xFA, 0xFB].pack('CC').force_encoding('utf-8')
     valid_str = [0xFF, 0xE3].pack("U*")
 
@@ -188,6 +190,12 @@ output_data_type json
     # #format should logs for this record (but we cannot test it...)
     assert_equal '', r1
 
+    assert_equal :warn, $log.logs[0][0]
+    assert       $log.logs[0][1] =~ /source sequence is illegal\/malformed utf-8, ignored/
+    assert_equal 'JSON::GeneratorError', $log.logs[0][2][:error_class].to_s
+
+    $log.clear
+
     p2 = create_plugin_instance(Fluent::TestAOutput, %[
 type testa
 output_include_time true
@@ -197,6 +205,49 @@ output_data_type ltsv
     r2 = p2.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
     # #format should logs for this record (but we cannot test it...)
     assert_equal '', r2
+
+    assert_equal :warn, $log.logs[0][0]
+    assert       $log.logs[0][1] =~ /^invalid byte sequence in UTF-8, ignored/
+    assert_equal 'ArgumentError', $log.logs[0][2][:error_class].to_s
+
+    $log.clear
+  end
+
+  def test_format_invalid_utf8_sequence_suppress_logs
+    $log.clear
+
+    invalid_str = [0xFA, 0xFB].pack('CC').force_encoding('utf-8')
+    valid_str = [0xFF, 0xE3].pack("U*")
+
+    p1 = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time true
+output_include_tag  true
+output_data_type json
+suppress_log_broken_string true
+])
+    r1 = p1.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
+    # #format should logs for this record (but we cannot test it...)
+    assert_equal '', r1
+
+    assert_equal 0, $log.logs.size
+
+    $log.clear
+
+    p2 = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time true
+output_include_tag  true
+output_data_type ltsv
+suppress_log_broken_string true
+])
+    r2 = p2.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
+    # #format should logs for this record (but we cannot test it...)
+    assert_equal '', r2
+
+    assert_equal 0, $log.logs.size
+
+    $log.clear
   end
 
   def test_field_separator_newline_ltsv
