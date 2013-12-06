@@ -7,6 +7,7 @@ module Fluent
       attr_accessor :output_include_time, :output_include_tag, :output_data_type
       attr_accessor :add_newline, :field_separator
       attr_accessor :remove_prefix, :default_tag
+      attr_accessor :null_value
 
       attr_accessor :suppress_log_broken_string
 
@@ -45,6 +46,8 @@ module Fluent
             raise Fluent::ConfigError, "Missing 'default_tag' with output_include_tag and remove_prefix."
           end
         end
+
+        @null_value = first_value( conf['null_value'], @null_value, 'NULL' )
 
         # default timezone: utc
         if not conf.has_key?('localtime') and not conf.has_key?('utc')
@@ -85,7 +88,7 @@ module Fluent
           end
         else
           @custom_attributes.map{|attr|
-            record[attr].nil? ? 'NULL' : record[attr].to_s
+            record[attr].nil? ? @null_value : record[attr].to_s
           }.join(@f_separator)
         end
       end
