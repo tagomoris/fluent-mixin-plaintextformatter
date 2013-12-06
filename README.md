@@ -61,6 +61,7 @@ And you can overwrite default formatting configurations on your plugin (values b
       config_set_default :time_format, nil   # nil means ISO8601 '2012-07-13T19:29:49+09:00'
       config_set_default :remove_prefix, nil
       config_set_default :default_tag, nil
+      config_set_default :null_value, 'NULL'
       
       # ...
     end
@@ -80,6 +81,8 @@ Provided configurations are below:
 * remove_prefix
   * input tag 'test.foo' with 'remove_prefix test', output tag is 'foo'.
   * 'default\_tag' configuration is used when input tag is completely equal to 'remove\_prefix'
+* null_value
+  * output value if value is null(nil). default is 'NULL'.
 
 ## AUTHOR / CONTRIBUTORS
 
@@ -87,6 +90,7 @@ Provided configurations are below:
   * TAGOMORI Satoshi <tagomoris@gmail.com>
 * CONTRIBUTORS
   * wolfg1969 https://github.com/wolfg1969
+  * Shinya Okano <tokibito@gmail.com>
 
 ## LICENSE
 

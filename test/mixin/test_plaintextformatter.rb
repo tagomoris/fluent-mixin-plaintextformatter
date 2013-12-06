@@ -289,4 +289,33 @@ output_data_type attr:foo,bar
     # format
     assert_equal "2012-07-13T07:05:05Z\ttest.a\ttrue\tfalse\n", p.format('test.a', 1342163105, r)
   end
+
+  def test_null_value_default
+    p = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time false
+output_include_tag false
+output_data_type attr:foo
+])
+    r = {'foo' => nil}
+    # stringify
+    assert_equal "NULL", p.stringify_record(r)
+    # format
+    assert_equal "NULL\n", p.format('test.a', 1342163105, r)
+  end
+
+  def test_null_value_custom
+    p = create_plugin_instance(Fluent::TestAOutput, %[
+type testa
+output_include_time false
+output_include_tag false
+output_data_type attr:foo
+null_value \\N
+])
+    r = {'foo' => nil}
+    # stringify
+    assert_equal "\\N", p.stringify_record(r)
+    # format
+    assert_equal "\\N\n", p.format('test.a', 1342163105, r)
+  end
 end
