@@ -113,7 +113,7 @@ module Fluent
                   end
         begin
           time_str + tag_str + stringify_record(record) + (@add_newline ? "\n" : '')
-        rescue JSON::GeneratorError => e
+        rescue Encoding::UndefinedConversionError, Encoding::InvalidByteSequenceError, JSON::GeneratorError => e
           # partial character in source, but hit end
           # source sequence is illegal/malformed utf-8
           unless @suppress_log_broken_string
