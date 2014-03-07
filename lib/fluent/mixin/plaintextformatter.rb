@@ -117,13 +117,21 @@ module Fluent
           # partial character in source, but hit end
           # source sequence is illegal/malformed utf-8
           unless @suppress_log_broken_string
-            $log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+            if self.respond_to?(:log)
+              log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+            else
+              $log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+            end
           end
           ''
         rescue ArgumentError => e
           raise unless e.message == 'invalid byte sequence in UTF-8'
           unless @suppress_log_broken_string
-            $log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+            if self.respond_to?(:log)
+              log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+            else
+              $log.warn e.message + ", ignored", :error_class => e.class, :tag => tag, :record => record.inspect # quote explicitly
+            end
           end
           ''
         end
