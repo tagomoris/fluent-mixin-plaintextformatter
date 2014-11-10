@@ -17,11 +17,22 @@ module Fluent
         args.reduce{|a,b| (not a.nil?) ? a : b}
       end
 
+      def bool_value(str)
+        case str.to_s
+        when 'true', 'yes'
+          true
+        when 'false', 'no'
+          false
+        else
+          nil
+        end
+      end
+
       def configure(conf)
         super
 
-        @output_include_time = first_value( Fluent::Config.bool_value(conf['output_include_time']), @output_include_time, true )
-        @output_include_tag = first_value( Fluent::Config.bool_value(conf['output_include_tag']), @output_include_tag, true )
+        @output_include_time = first_value( bool_value(conf['output_include_time']), @output_include_time, true )
+        @output_include_tag = first_value( bool_value(conf['output_include_tag']), @output_include_tag, true )
 
         @output_data_type = first_value( conf['output_data_type'], @output_data_type, 'json' )
 
@@ -33,7 +44,7 @@ module Fluent
                        else "\t"
                        end
 
-        @add_newline = first_value( Fluent::Config.bool_value(conf['add_newline']), @add_newline, true )
+        @add_newline = first_value( bool_value(conf['add_newline']), @add_newline, true )
 
         @remove_prefix = conf['remove_prefix']
         if @remove_prefix
@@ -72,7 +83,7 @@ module Fluent
                              end
 
         @suppress_log_broken_string = first_value(
-          Fluent::Config.bool_value(conf['suppress_log_broken_string']),
+          bool_value(conf['suppress_log_broken_string']),
           @suppress_log_broken_string,
           false
         )
