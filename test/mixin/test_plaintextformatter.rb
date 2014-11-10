@@ -1,4 +1,5 @@
 require 'helper'
+require "stringio"
 
 class PlainTextFormatterTest < Test::Unit::TestCase
   def create_plugin_instance(type, conf = CONFIG, tag='test')
@@ -175,8 +176,6 @@ field_separator comma
   end
 
   def test_format_invalid_utf8_sequence
-    $log.clear
-
     invalid_str = [0xFA, 0xFB].pack('CC').force_encoding('utf-8')
     valid_str = [0xFF, 0xE3].pack("U*")
 
@@ -186,15 +185,29 @@ output_include_time true
 output_include_tag  true
 output_data_type json
 ])
+
+    if p1.respond_to?(:log)
+      p1.log.out = StringIO.new
+    else
+      $log.clear
+    end
+
     r1 = p1.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
     # #format should logs for this record (but we cannot test it...)
     assert_equal '', r1
 
-    assert_equal :warn, $log.logs[0][0]
-    assert       $log.logs[0][1] =~ /source sequence is illegal\/malformed utf-8, ignored/
-    assert_equal 'JSON::GeneratorError', $log.logs[0][2][:error_class].to_s
+    if p1.respond_to?(:log)
+      p1.log.out.rewind
+      log_str = p1.log.out.read
+      assert_match /\[warn\]/, log_str;
+      assert_match /source sequence is illegal\/malformed utf-8, ignored/, log_str
+      assert_match /JSON::GeneratorError/, log_str
+    else
+      assert_equal :warn, $log.logs[0][0]
+      assert       $log.logs[0][1] =~ /source sequence is illegal\/malformed utf-8, ignored/
+      assert_equal 'JSON::GeneratorError', $log.logs[0][2][:error_class].to_s
+    end
 
-    $log.clear
 
     p2 = create_plugin_instance(Fluent::TestAOutput, %[
 type testa
@@ -202,20 +215,30 @@ output_include_time true
 output_include_tag  true
 output_data_type ltsv
 ])
+    if p2.respond_to?(:log)
+      p2.log.out = StringIO.new
+    else
+      $log.clear
+    end
+
     r2 = p2.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
     # #format should logs for this record (but we cannot test it...)
     assert_equal '', r2
 
-    assert_equal :warn, $log.logs[0][0]
-    assert       $log.logs[0][1] =~ /^invalid byte sequence in UTF-8, ignored/
-    assert_equal 'ArgumentError', $log.logs[0][2][:error_class].to_s
-
-    $log.clear
+    if p2.respond_to?(:log)
+      p2.log.out.rewind
+      log_str = p2.log.out.read
+      assert_match /\[warn\]/, log_str;
+      assert_match /invalid byte sequence in UTF-8, ignored/, log_str
+      assert_match /ArgumentError/, log_str
+    else
+      assert_equal :warn, $log.logs[0][0]
+      assert       $log.logs[0][1] =~ /^invalid byte sequence in UTF-8, ignored/
+      assert_equal 'ArgumentError', $log.logs[0][2][:error_class].to_s
+    end
   end
 
   def test_format_invalid_utf8_sequence_suppress_logs
-    $log.clear
-
     invalid_str = [0xFA, 0xFB].pack('CC').force_encoding('utf-8')
     valid_str = [0xFF, 0xE3].pack("U*")
 
@@ -226,13 +249,23 @@ output_include_tag  true
 output_data_type json
 suppress_log_broken_string true
 ])
+    if p1.respond_to?(:log)
+      p1.log.out = StringIO.new
+    else
+      $log.clear
+    end
+
     r1 = p1.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
     # #format should logs for this record (but we cannot test it...)
     assert_equal '', r1
 
-    assert_equal 0, $log.logs.size
-
-    $log.clear
+    if p1.respond_to?(:log)
+      p1.log.out.rewind
+      log_str = p1.log.out.read
+      assert_equal '', log_str
+    else
+      assert_equal 0, $log.logs.size
+    end
 
     p2 = create_plugin_instance(Fluent::TestAOutput, %[
 type testa
@@ -241,13 +274,23 @@ output_include_tag  true
 output_data_type ltsv
 suppress_log_broken_string true
 ])
+    if p2.respond_to?(:log)
+      p2.log.out = StringIO.new
+    else
+      $log.clear
+    end
+
     r2 = p2.format('tag', Fluent::Engine.now, {'foo' => valid_str, 'bar' => invalid_str + valid_str})
     # #format should logs for this record (but we cannot test it...)
     assert_equal '', r2
 
-    assert_equal 0, $log.logs.size
-
-    $log.clear
+    if p2.respond_to?(:log)
+      p2.log.out.rewind
+      log_str = p2.log.out.read
+      assert_equal '', log_str
+    else
+      assert_equal 0, $log.logs.size
+    end
   end
 
   def test_field_separator_newline_ltsv
