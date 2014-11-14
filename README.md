@@ -7,7 +7,7 @@ This module provides features to:
 * format whole data as serialized JSON, single attribute or separated multi attributes
 * include time as line header (formatted by time_format in UTC(default) or localtime), or not
 * include tag as line header (remove_prefix available), or not
-* change field separator (TAB(default), SPACE, COMMA or SOH(\\001))
+* change field separator (TAB(default), SPACE, COMMA, SOH(\\001) or PIPE)
 * add new line as termination, or not
 
 ## Usage
@@ -74,7 +74,7 @@ Provided configurations are below:
   * 'json': output by JSON
   * 'ltsv': output by LTSV, see: http://ltsv.org/
   * 'attr:key1,key2,key3': values of 'key1' and 'key2' and ..., with separator specified by 'field_separator'
-* field\_separator [TAB/SPACE/COMMA/SOH]
+* field\_separator [TAB/SPACE/COMMA/SOH/PIPE]
 * add_newline [yes/no]
 * time_format
   * format string like '%Y-%m-%d %H:%M:%S' or you want
