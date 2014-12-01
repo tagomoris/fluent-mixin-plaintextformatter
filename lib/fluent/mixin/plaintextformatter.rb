@@ -38,6 +38,7 @@ module Fluent
                        when /SPACE/i then ' '
                        when /COMMA/i then ','
                        when /SOH/i then "\x01"
+                       when /PIPE/i then '|'
                        else "\t"
                        end
 
