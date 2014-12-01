@@ -19,6 +19,8 @@ module Fluent
     def configure(conf)
       super
     end
+
+    def log; $log; end
   end
 
   class TestBOutput < Fluent::BufferedOutput
@@ -39,6 +41,8 @@ module Fluent
     def configure(conf)
       super
     end
+
+    def log; $log; end
   end
 
   class TestCOutput < Fluent::BufferedOutput
@@ -59,6 +63,8 @@ module Fluent
     def configure(conf)
       super
     end
+
+    def log; $log; end
   end
 
   class TestDOutput < Fluent::BufferedOutput
@@ -77,5 +83,7 @@ module Fluent
     def configure(conf)
       super
     end
+
+    def log; $log; end
   end
 end
